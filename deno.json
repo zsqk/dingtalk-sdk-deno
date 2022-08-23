@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "strict": true
+  },
+  "fmt": {
+    "files": {
+      "include": [
+        "src/"
+      ]
+    },
+    "options": {
+      "useTabs": false,
+      "lineWidth": 80,
+      "indentWidth": 2,
+      "singleQuote": true
+    }
+  }
+}
