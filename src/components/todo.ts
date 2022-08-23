@@ -2,6 +2,8 @@
  * [Dingtalk] 创建钉钉待办任务
  * [doc](https://open.dingtalk.com/document/orgapp-server/add-dingtalk-to-do-task)
  *
+ * 权限点: `Todo.Todo.Write`
+ *
  * @author Lian Zheren <lzr@go0356.com>
  */
 export async function addTask({ unionID, operatorID }: {
