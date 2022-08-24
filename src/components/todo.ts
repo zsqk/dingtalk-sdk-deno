@@ -1,3 +1,5 @@
+import { dingtalkFetch } from '../common/dingtalk-fetch.ts';
+
 /**
  * [Dingtalk] 创建钉钉待办任务
  * [doc](https://open.dingtalk.com/document/orgapp-server/add-dingtalk-to-do-task)
@@ -63,4 +65,36 @@ export async function addDingtalkTodo(
     status: res.status,
     body: await res.json(),
   };
+}
+
+// TODO: 完善权限点
+/**
+ * [Dingtalk] 查看用户钉钉待办任务 (查询企业下用户待办列表)
+ * [doc](https://open.dingtalk.com/document/orgapp-server/query-the-to-do-list-of-enterprise-users)
+ *
+ * 权限点:
+ *
+ * @author Lian Zheren <lzr@go0356.com>
+ */
+export async function getDingtalkTodoList(unionID: string, token: string, {
+  filter = 'all',
+  next,
+}: {
+  filter?: 'done' | 'doing' | 'all';
+  next?: string;
+} = {}) {
+  const path = `/v1.0/todo/users/${unionID}/org/tasks/query`;
+  const body: { isDone?: boolean; nextToken?: string } = {};
+  if (filter === 'doing') {
+    body.isDone = false;
+  }
+  if (filter === 'done') {
+    body.isDone = true;
+  }
+  if (next !== undefined) {
+    body.nextToken = next;
+  }
+  const res = await dingtalkFetch(path, token, { body });
+
+  return res.body;
 }
