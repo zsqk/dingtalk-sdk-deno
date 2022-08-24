@@ -4,7 +4,7 @@ import {
   getDingtalkApprovalProcess,
 } from './components/approval.ts';
 import { getDingtalkUserInfo } from './components/get-getuserinfo.ts';
-import { getDingtalkUserContactInfo } from './components/get-user-contact-info.ts';
+import { getDingtalkUserByUserID } from './components/user.ts';
 
 export class DingtalkSDK {
   /** appkey, 在钉钉开发者后台获取 */
@@ -94,7 +94,7 @@ export class DingtalkSDK {
    * [Dingtalk] 获取钉钉用户基础信息 (通过免登码获取用户信息)
    * [doc](https://bit.ly/3sXTWuT)
    */
-  async getUserInfo(code: string) {
+  async getUserInfoByCode(code: string) {
     await this.init();
     return getDingtalkUserInfo(code, this.accessToken);
   }
@@ -103,9 +103,9 @@ export class DingtalkSDK {
    * [Dingtalk] 根据 userid 获取用户详情 (旧版 查询用户详情)
    * [doc](https://developers.dingtalk.com/document/app/query-user-details)
    */
-  async getDingtalkUserContactInfo(userID: string) {
+  async getUserByUserID(userID: string) {
     await this.init();
-    return getDingtalkUserContactInfo(userID, this.accessToken);
+    return getDingtalkUserByUserID(userID, this.accessToken);
   }
 
   /**

@@ -1,11 +1,11 @@
 /**
- * [Dingtalk] 根据userid获取用户详情
+ * [Dingtalk] 根据 userid 获取用户详情 (查询用户详情)
  * [doc](https://developers.dingtalk.com/document/app/query-user-details)
  * [相似功能](https://developers.dingtalk.com/document/app/dingtalk-retrieve-user-information)
  *
  * @author Lian Zheren <lzr@go0356.com>
  */
-export async function getDingtalkUserContactInfo(
+export async function getDingtalkUserByUserID(
   userID: string,
   token: string,
 ): Promise<{
