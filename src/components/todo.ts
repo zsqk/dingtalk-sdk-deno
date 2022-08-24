@@ -38,16 +38,11 @@ export async function addDingtalkTodo(
   },
   token: string,
 ) {
-  const path = `https://api.dingtalk.com/v1.0/todo/users/${unionID}/tasks`;
+  const path = `/v1.0/todo/users/${unionID}/tasks`;
   // 经实测, 文档中描述的 operatorId 参数并无额外作用.
   // 如果 operatorId 与 unionID 不一致, 则无任何效果, 也不报错.
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: {
-      'x-acs-dingtalk-access-token': token,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  const res = await dingtalkFetch(path, token, {
+    body: {
       subject,
       description,
       dueTime,
@@ -55,16 +50,10 @@ export async function addDingtalkTodo(
       participantIds: participantUnionIDs,
       isOnlyShowExecutor,
       priority,
-    }),
+    },
   });
-  if (res.status >= 500) {
-    throw new Error(`DINGTALK HTTP ${res.status}`);
-  }
   // TODO: 返回类型
-  return {
-    status: res.status,
-    body: await res.json(),
-  };
+  return res;
 }
 
 // TODO: 完善权限点
