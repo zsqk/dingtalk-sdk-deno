@@ -1,11 +1,13 @@
 /**
- * [Dingtalk] 根据userid获取用户详情
+ * [Dingtalk] 根据 userid 获取用户详情 (查询用户详情)
  * [doc](https://developers.dingtalk.com/document/app/query-user-details)
  * [相似功能](https://developers.dingtalk.com/document/app/dingtalk-retrieve-user-information)
  *
+ * 混合权限, 除了接口调用权限外, 返回数据还受到其他权限影响, 详见文档.
+ *
  * @author Lian Zheren <lzr@go0356.com>
  */
-export async function getDingtalkUserContactInfo(
+export async function getDingtalkUserByUserID(
   userID: string,
   token: string,
 ): Promise<{
@@ -23,6 +25,7 @@ export async function getDingtalkUserContactInfo(
   avatar: string;
   /** 是否已激活钉钉 */
   active: boolean;
+  unionid: string;
 }> {
   const path = `https://oapi.dingtalk.com/topapi/v2/user/get`;
   const q = new URLSearchParams({ access_token: token });
@@ -41,6 +44,7 @@ export async function getDingtalkUserContactInfo(
     hired_date: hiredTime,
     avatar,
     active,
+    unionid,
   } = res.result;
   if (typeof name !== 'string') {
     throw new TypeError('name');
@@ -63,6 +67,12 @@ export async function getDingtalkUserContactInfo(
   if (typeof active !== 'boolean') {
     throw new TypeError('active');
   }
-  console.log(res.result);
-  return { name, phonenum, title, number, hiredTime, avatar, active };
+  if (typeof unionid !== 'string') {
+    throw new TypeError('unionid');
+  }
+
+  // 用于进一步实际调试类型
+  // console.log(res.result);
+
+  return { name, phonenum, title, number, hiredTime, avatar, active, unionid };
 }
