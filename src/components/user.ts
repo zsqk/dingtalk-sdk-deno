@@ -16,9 +16,9 @@ export async function getDingtalkUserByUserID(
   /** 职员手机号 */
   phonenum: string;
   /** 职员职位 */
-  title: string;
+  title?: string;
   /** 职员工号 */
-  number: string;
+  number?: string;
   /** 入职时间 */
   hiredTime?: number;
   /** 头像 */
@@ -49,17 +49,17 @@ export async function getDingtalkUserByUserID(
   if (typeof name !== 'string') {
     throw new TypeError('name');
   }
-  if (typeof number !== 'string') {
-    throw new TypeError('number');
+  if (typeof number !== 'string' && number !== undefined) {
+    throw new TypeError(`number is ${typeof number}`);
   }
   if (typeof phonenum !== 'string') {
-    throw new TypeError('phonenum');
+    throw new TypeError(`需要开通 fieldMobile 权限`);
   }
   if (hiredTime !== undefined && typeof hiredTime !== 'number') {
     throw new TypeError('hiredTime');
   }
-  if (typeof title !== 'string') {
-    throw new TypeError('title');
+  if (typeof title !== 'string' && title !== undefined) {
+    throw new TypeError(`title is ${typeof title}`);
   }
   if (typeof avatar !== 'string') {
     throw new TypeError('avatar');
@@ -75,4 +75,56 @@ export async function getDingtalkUserByUserID(
   // console.log(res.result);
 
   return { name, phonenum, title, number, hiredTime, avatar, active, unionid };
+}
+
+/**
+ * [Dingtalk] 根据 deptid 获取用户详情 (获取部门用户详情)
+ * [doc](https://open.dingtalk.com/document/orgapp-server/queries-the-complete-information-of-a-department-user)
+ * @param params
+ */
+export async function getDingtalkUserByDeptID(deptID: number, token: string) {
+  const url = new URL(`https://oapi.dingtalk.com/topapi/v2/user/list`);
+  url.searchParams.set('access_token', token);
+  const res = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      dept_id: deptID,
+      cursor: 0,
+      size: 10,
+    }),
+  });
+  const resBody = await res.json();
+  if (resBody.errmsg !== 'ok') {
+    throw new Error(''.concat(resBody.errcode + ': ').concat(resBody.errmsg));
+  }
+  return {
+    status: res.status,
+    body: resBody.result,
+  };
+}
+
+/**
+ * [Dingtalk] 根据手机号查询用户
+ * [doc](https://open.dingtalk.com/document/orgapp-server/query-users-by-phone-number)
+ */
+export async function getDingtalkUserIDByPhonenum(
+  phonenum: string,
+  token: string,
+): Promise<{ status: number; body: { userid: string } }> {
+  const url = new URL(`https://oapi.dingtalk.com/topapi/v2/user/getbymobile`);
+  url.searchParams.set('access_token', token);
+  const res = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      mobile: phonenum,
+    }),
+  });
+  const resBody = await res.json();
+  if (resBody.errmsg !== 'ok') {
+    throw new Error(''.concat(resBody.errcode + ': ').concat(resBody.errmsg));
+  }
+  return {
+    status: res.status,
+    body: resBody.result,
+  };
 }

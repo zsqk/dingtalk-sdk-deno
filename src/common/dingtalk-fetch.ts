@@ -4,7 +4,12 @@
 export async function dingtalkFetch(
   path: string,
   token: string,
-  { query, body }: { query?: [string, string][]; body?: unknown } = {},
+  { query, body, method = 'POST' }: {
+    /** 默认为 POST */
+    method?: 'GET' | 'POST';
+    query?: [string, string][];
+    body?: unknown;
+  } = {},
 ) {
   const url = new URL(`https://api.dingtalk.com${path}`);
   if (query) {
@@ -13,15 +18,16 @@ export async function dingtalkFetch(
     }
   }
   const res = await fetch(url, {
-    method: 'POST',
+    method,
     headers: {
       'x-acs-dingtalk-access-token': token,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : null,
   });
 
   if (res.status >= 500) {
+    console.error(res, await res.text().catch(() => 'no text'));
     throw new Error(`DINGTALK HTTP ${res.status}`);
   }
 
