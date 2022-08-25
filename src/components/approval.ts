@@ -44,6 +44,7 @@ export async function getDingtalkApprovalProcess(
   const path = '/v1.0/workflow/forms/schemas/processCodes';
   const res = await dingtalkFetch(path, token, {
     query: [['processCode', processCode]],
+    method: 'GET',
   });
   // TODO: 完善类型
   return res.body.result;
