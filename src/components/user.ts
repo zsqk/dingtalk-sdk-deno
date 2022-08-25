@@ -16,9 +16,9 @@ export async function getDingtalkUserByUserID(
   /** 职员手机号 */
   phonenum: string;
   /** 职员职位 */
-  title: string;
+  title?: string;
   /** 职员工号 */
-  number: string;
+  number?: string;
   /** 入职时间 */
   hiredTime?: number;
   /** 头像 */
@@ -49,17 +49,17 @@ export async function getDingtalkUserByUserID(
   if (typeof name !== 'string') {
     throw new TypeError('name');
   }
-  if (typeof number !== 'string') {
-    throw new TypeError('number');
+  if (typeof number !== 'string' && number !== undefined) {
+    throw new TypeError(`number is ${typeof number}`);
   }
   if (typeof phonenum !== 'string') {
-    throw new TypeError('phonenum');
+    throw new TypeError(`需要开通 fieldMobile 权限`);
   }
   if (hiredTime !== undefined && typeof hiredTime !== 'number') {
     throw new TypeError('hiredTime');
   }
-  if (typeof title !== 'string') {
-    throw new TypeError('title');
+  if (typeof title !== 'string' && title !== undefined) {
+    throw new TypeError(`title is ${typeof title}`);
   }
   if (typeof avatar !== 'string') {
     throw new TypeError('avatar');
