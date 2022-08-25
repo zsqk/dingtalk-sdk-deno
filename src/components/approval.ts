@@ -93,3 +93,54 @@ export async function getDingtalkApprovalProcess(
   });
   return res.body.result;
 }
+
+/**
+ * [Dingtalk] 创建审批流程 (创建或更新审批表单模板)
+ * [doc](https://open.dingtalk.com/document/orgapp-server/create-an-approval-form-template)
+ *
+ * @author Lian Zheren <lzr@go0356.com>
+ */
+export async function addDingtalkApprovalProcess(d: {
+  name: string;
+  description: string;
+  formComponents: FormItem[];
+}, token: string) {
+  const path = `/v1.0/workflow/forms`;
+  const res = await dingtalkFetch(path, token, {
+    body: d,
+  });
+  return res;
+}
+
+/** 表单控件 */
+interface FormItem {
+  /** 控件类型, 详见文档 */
+  componentType:
+    | 'TextField'
+    | 'TextareaField'
+    | 'NumberField'
+    | 'DDSelectField'
+    | 'DDMultiSelectField'
+    | 'DDDateField'
+    | 'DDDateRangeField'
+    | 'TextNote'
+    | 'PhoneField'
+    | 'DDPhotoField'
+    | 'MoneyField'
+    | 'TableField'
+    | 'DDAttachment'
+    | 'InnerContactField'
+    | 'DepartmentField'
+    | 'RelateField'
+    | 'AddressField'
+    | 'StarRatingField'
+    | 'FormRelateField';
+  props: {
+    /** 控件名称 (用户设置的名称) */
+    label: string;
+    /** 控件说明 */
+    placeholder: string;
+    /** 是否必填 */
+    required: boolean;
+  };
+}
