@@ -4,6 +4,7 @@ import {
 } from 'https://deno.land/std@0.152.0/testing/asserts.ts';
 import {
   addDingtalkApprovalInstance,
+  addDingtalkApprovalProcess,
   getDingtalkApprovalProcess,
 } from './approval.ts';
 
@@ -44,4 +45,36 @@ Deno.test('getDingtalkApprovalProcess', async () => {
   assertEquals(res.schemaContent.items[1].props.label, '审批金额');
   assertEquals(res.schemaContent.items[0].componentType, 'TextField');
   assertEquals(res.schemaContent.items[1].componentType, 'MoneyField');
+});
+
+Deno.test('addDingtalkApprovalProcess-s', async () => {
+  const res = await addDingtalkApprovalProcess({
+    name: 'test name',
+    description: 'desc',
+    formComponents: [{
+      componentType: 'TextField',
+      props: {
+        label: 'test input',
+        placeholder: 'lala',
+        required: false,
+      },
+    }],
+  }, DINGTALK_ACCESSTOKEN);
+  console.log(res);
+});
+
+Deno.test('addDingtalkApprovalProcess-500', async () => {
+  const res = await addDingtalkApprovalProcess({
+    name: '',
+    description: '',
+    formComponents: [{
+      componentType: 'TextField',
+      props: {
+        label: 'test',
+        placeholder: 'lala',
+        required: false,
+      },
+    }],
+  }, DINGTALK_ACCESSTOKEN);
+  console.log(res);
 });
