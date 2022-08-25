@@ -1,4 +1,8 @@
 import {
+  assert,
+  assertEquals,
+} from 'https://deno.land/std@0.152.0/testing/asserts.ts';
+import {
   addDingtalkApprovalInstance,
   getDingtalkApprovalProcess,
 } from './approval.ts';
@@ -14,6 +18,7 @@ Deno.test('addDingtalkApprovalInstance-base', async () => {
     formComponentValues: [{ name: '审批内容', value: new Date().toString() }],
   }, DINGTALK_ACCESSTOKEN);
   console.log(res);
+  assertEquals(typeof res.instanceId, 'string');
 });
 
 Deno.test('addDingtalkApprovalInstance-opt', async () => {
@@ -26,6 +31,7 @@ Deno.test('addDingtalkApprovalInstance-opt', async () => {
     ],
   }, DINGTALK_ACCESSTOKEN);
   console.log(res);
+  assertEquals(typeof res.instanceId, 'string');
 });
 
 Deno.test('getDingtalkApprovalProcess', async () => {
@@ -34,4 +40,8 @@ Deno.test('getDingtalkApprovalProcess', async () => {
     DINGTALK_ACCESSTOKEN,
   );
   console.log(res);
+  assertEquals(res.schemaContent.items[0].props.label, '审批内容');
+  assertEquals(res.schemaContent.items[1].props.label, '审批金额');
+  assertEquals(res.schemaContent.items[0].componentName, 'TextField');
+  assertEquals(res.schemaContent.items[1].componentName, 'MoneyField');
 });
