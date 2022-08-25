@@ -27,6 +27,7 @@ export async function dingtalkFetch(
   });
 
   if (res.status >= 500) {
+    console.error(res, await res.text().catch(() => 'no text'));
     throw new Error(`DINGTALK HTTP ${res.status}`);
   }
 
