@@ -110,7 +110,7 @@ export async function getDingtalkUserByDeptID(deptID: number, token: string) {
 export async function getDingtalkUserIDByPhonenum(
   phonenum: string,
   token: string,
-) {
+): Promise<{ status: number; body: { userid: string } }> {
   const url = new URL(`https://oapi.dingtalk.com/topapi/v2/user/getbymobile`);
   url.searchParams.set('access_token', token);
   const res = await fetch(url, {
