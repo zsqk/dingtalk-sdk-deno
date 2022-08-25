@@ -42,6 +42,6 @@ Deno.test('getDingtalkApprovalProcess', async () => {
   console.log(res);
   assertEquals(res.schemaContent.items[0].props.label, '审批内容');
   assertEquals(res.schemaContent.items[1].props.label, '审批金额');
-  assertEquals(res.schemaContent.items[0].componentName, 'TextField');
-  assertEquals(res.schemaContent.items[1].componentName, 'MoneyField');
+  assertEquals(res.schemaContent.items[0].componentType, 'TextField');
+  assertEquals(res.schemaContent.items[1].componentType, 'MoneyField');
 });

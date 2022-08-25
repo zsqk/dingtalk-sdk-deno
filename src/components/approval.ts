@@ -51,39 +51,7 @@ export async function getDingtalkApprovalProcess(
     /** 图标代号, 比如 `maintenance` */
     icon: string;
     /** 控件列表 */
-    items: Array<
-      {
-        /** 控件类型, 详见文档 */
-        componentName:
-          | 'TextField'
-          | 'TextareaField'
-          | 'NumberField'
-          | 'DDSelectField'
-          | 'DDMultiSelectField'
-          | 'DDDateField'
-          | 'DDDateRangeField'
-          | 'TextNote'
-          | 'PhoneField'
-          | 'DDPhotoField'
-          | 'MoneyField'
-          | 'TableField'
-          | 'DDAttachment'
-          | 'InnerContactField'
-          | 'DepartmentField'
-          | 'RelateField'
-          | 'AddressField'
-          | 'StarRatingField'
-          | 'FormRelateField';
-        props: {
-          /** 控件名称 (用户设置的名称) */
-          label: string;
-          /** 控件说明 */
-          placeholder: string;
-          /** 是否必填 */
-          required: boolean;
-        };
-      }
-    >;
+    items: FormItem[];
   };
 }> {
   const path = '/v1.0/workflow/forms/schemas/processCodes';
@@ -91,6 +59,11 @@ export async function getDingtalkApprovalProcess(
     query: [['processCode', processCode]],
     method: 'GET',
   });
+  res.body.result.schemaContent.items = res.body.result.schemaContent.items.map(
+    ({ componentName, ...rest }: { componentName: string }) => {
+      return { ...rest, componentType: componentName };
+    },
+  );
   return res.body.result;
 }
 
