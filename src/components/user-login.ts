@@ -7,7 +7,7 @@
  *
  * @author Lian Zheren <lzr@go0356.com>
  */
-export async function getDingtalkUserInfo(
+export async function getDingtalkUserBaseByCode(
   code: string,
   token: string,
 ): Promise<{

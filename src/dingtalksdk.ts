@@ -3,7 +3,7 @@ import {
   addDingtalkApprovalInstance,
   getDingtalkApprovalProcess,
 } from './components/approval.ts';
-import { getDingtalkUserInfo } from './components/get-getuserinfo.ts';
+import { getDingtalkUserBaseByCode } from './components/user-login.ts';
 import { getDingtalkUserByUserID } from './components/user.ts';
 
 export class DingtalkSDK {
@@ -94,9 +94,9 @@ export class DingtalkSDK {
    * [Dingtalk] 获取钉钉用户基础信息 (通过免登码获取用户信息)
    * [doc](https://bit.ly/3sXTWuT)
    */
-  async getUserInfoByCode(code: string) {
+  async getUserBaseByCode(code: string) {
     await this.init();
-    return getDingtalkUserInfo(code, this.accessToken);
+    return getDingtalkUserBaseByCode(code, this.accessToken);
   }
 
   /**
