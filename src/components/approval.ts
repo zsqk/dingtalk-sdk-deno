@@ -20,7 +20,7 @@ export async function addDingtalkApprovalInstance(
     targetSelectActioners?: [];
   },
   token: string,
-) {
+): Promise<{ instanceId: string }> {
   const path = '/v1.0/workflow/processInstances';
   // 注意, 虽然文档里标注 deptId 为可选, 可是实际执行上, 为必填.
   // 但是 deptId 并不需要额外查找, 因为实测不要求与用户相符, 为 1 即可.
@@ -40,12 +40,56 @@ export async function addDingtalkApprovalInstance(
 export async function getDingtalkApprovalProcess(
   processCode: string,
   token: string,
-) {
+): Promise<{
+  /** 创建人 userId */
+  creatorUserId: string;
+  /** 表单名称 */
+  name: string;
+  schemaContent: {
+    /** 表单名称 */
+    title: string;
+    /** 图标代号, 比如 `maintenance` */
+    icon: string;
+    /** 控件列表 */
+    items: Array<
+      {
+        /** 控件类型, 详见文档 */
+        componentName:
+          | 'TextField'
+          | 'TextareaField'
+          | 'NumberField'
+          | 'DDSelectField'
+          | 'DDMultiSelectField'
+          | 'DDDateField'
+          | 'DDDateRangeField'
+          | 'TextNote'
+          | 'PhoneField'
+          | 'DDPhotoField'
+          | 'MoneyField'
+          | 'TableField'
+          | 'DDAttachment'
+          | 'InnerContactField'
+          | 'DepartmentField'
+          | 'RelateField'
+          | 'AddressField'
+          | 'StarRatingField'
+          | 'FormRelateField';
+        props: {
+          /** 控件名称 (用户设置的名称) */
+          label: string;
+          /** 控件说明 */
+          placeholder: string;
+          /** 是否必填 */
+          required: boolean;
+        };
+      }
+    >;
+  };
+}> {
   const path = '/v1.0/workflow/forms/schemas/processCodes';
   const res = await dingtalkFetch(path, token, {
     query: [['processCode', processCode]],
     method: 'GET',
   });
-  // TODO: 完善类型
   return res.body.result;
 }
