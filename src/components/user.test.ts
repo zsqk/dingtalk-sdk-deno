@@ -1,4 +1,4 @@
-import { getDingtalkUserByUserID } from './user.ts';
+import { getDingtalkUserByDeptID, getDingtalkUserByUserID } from './user.ts';
 import { assertEquals } from 'https://deno.land/std@0.152.0/testing/asserts.ts';
 
 const DINGTALK_ACCESSTOKEN = Deno.env.get('DINGTALK_ACCESSTOKEN') ?? '';
@@ -11,4 +11,12 @@ Deno.test('getDingtalkUserByUserID', async () => {
   );
   console.log('res', res);
   assertEquals(typeof res?.name, 'string');
+});
+
+Deno.test('getDingtalkUserByDeptID', async () => {
+  const res = await getDingtalkUserByDeptID(
+    1,
+    DINGTALK_ACCESSTOKEN,
+  );
+  console.log('res', res);
 });

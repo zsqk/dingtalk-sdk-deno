@@ -76,3 +76,29 @@ export async function getDingtalkUserByUserID(
 
   return { name, phonenum, title, number, hiredTime, avatar, active, unionid };
 }
+
+/**
+ * [Dingtalk] 根据 deptid 获取用户详情 (获取部门用户详情)
+ * [doc](https://open.dingtalk.com/document/orgapp-server/queries-the-complete-information-of-a-department-user)
+ * @param params
+ */
+export async function getDingtalkUserByDeptID(deptID: number, token: string) {
+  const url = new URL(`https://oapi.dingtalk.com/topapi/v2/user/list`);
+  url.searchParams.set('access_token', token);
+  const res = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      dept_id: deptID,
+      cursor: 0,
+      size: 10,
+    }),
+  });
+  const resBody = await res.json();
+  if (resBody.errmsg !== 'ok') {
+    throw new Error(''.concat(resBody.errcode + ': ').concat(resBody.errmsg));
+  }
+  return {
+    status: res.status,
+    body: resBody.result,
+  };
+}
