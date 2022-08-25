@@ -2,21 +2,21 @@ import { dingtalkFetch } from '../common/dingtalk-fetch.ts';
 
 /**
  * [Dingtalk] 发起审批实例
- * https://open.dingtalk.com/document/orgapp-server/create-an-approval-instance
+ * [doc](https://open.dingtalk.com/document/orgapp-server/create-an-approval-instance)
  *
  * @author Lian Zheren <lzr@go0356.com>
  */
 export async function addDingtalkApprovalInstance(
   d: {
-    deptId?: number;
     originatorUserId: string;
     processCode: string;
-    microappAgentId?: string;
     formComponentValues: Array<{
       id?: string;
       name: string;
       value: string;
     }>;
+    deptId?: number;
+    microappAgentId?: string;
     targetSelectActioners?: [];
   },
   token: string,
@@ -33,10 +33,7 @@ export async function addDingtalkApprovalInstance(
 
 /**
  * [Dingtalk] 获取审批流程信息
- * https://open.dingtalk.com/document/orgapp-server/obtain-the-form-schema
- * @param processCode
- * @param token
- * @returns
+ * [doc](https://open.dingtalk.com/document/orgapp-server/obtain-the-form-schema)
  *
  * @author Lian Zheren <lzr@go0356.com>
  */
