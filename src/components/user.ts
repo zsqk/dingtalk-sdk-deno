@@ -102,3 +102,29 @@ export async function getDingtalkUserByDeptID(deptID: number, token: string) {
     body: resBody.result,
   };
 }
+
+/**
+ * [Dingtalk] 根据手机号查询用户
+ * [doc](https://open.dingtalk.com/document/orgapp-server/query-users-by-phone-number)
+ */
+export async function getDingtalkUserIDByPhonenum(
+  phonenum: string,
+  token: string,
+) {
+  const url = new URL(`https://oapi.dingtalk.com/topapi/v2/user/getbymobile`);
+  url.searchParams.set('access_token', token);
+  const res = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      mobile: phonenum,
+    }),
+  });
+  const resBody = await res.json();
+  if (resBody.errmsg !== 'ok') {
+    throw new Error(''.concat(resBody.errcode + ': ').concat(resBody.errmsg));
+  }
+  return {
+    status: res.status,
+    body: resBody.result,
+  };
+}
