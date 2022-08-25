@@ -77,12 +77,12 @@ export async function addDingtalkApprovalProcess(d: {
   name: string;
   description: string;
   formComponents: FormItem[];
-}, token: string) {
+}, token: string): Promise<{ processCode: string }> {
   const path = `/v1.0/workflow/forms`;
   const res = await dingtalkFetch(path, token, {
     body: d,
   });
-  return res;
+  return res.body.result;
 }
 
 /** 表单控件 */

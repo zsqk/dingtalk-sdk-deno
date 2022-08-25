@@ -61,6 +61,7 @@ Deno.test('addDingtalkApprovalProcess-s', async () => {
     }],
   }, DINGTALK_ACCESSTOKEN);
   console.log(res);
+  assertEquals(typeof res.processCode, 'string');
 });
 
 Deno.test('addDingtalkApprovalProcess-500', async () => {
