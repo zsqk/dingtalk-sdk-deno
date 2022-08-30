@@ -77,9 +77,14 @@ export async function getDingtalkUserByUserID(
   return { name, phonenum, title, number, hiredTime, avatar, active, unionid };
 }
 
+// TODO: 补充权限点
 /**
  * [Dingtalk] 获取部门下的用户列表 (获取部门用户详情)
  * [doc](https://open.dingtalk.com/document/orgapp-server/queries-the-complete-information-of-a-department-user)
+ *
+ * 权限点:
+ *
+ * @author Lian Zheren <lzr@go0356.com>
  */
 export async function getDingtalkUserByDeptID(deptID: number, token: string) {
   const url = new URL(`https://oapi.dingtalk.com/topapi/v2/user/list`);
@@ -102,9 +107,14 @@ export async function getDingtalkUserByDeptID(deptID: number, token: string) {
   };
 }
 
+// TODO: 补充权限点
 /**
  * [Dingtalk] 根据手机号查询用户 ID (根据手机号查询用户)
  * [doc](https://open.dingtalk.com/document/orgapp-server/query-users-by-phone-number)
+ *
+ * 权限点:
+ *
+ * @author Lian Zheren <lzr@go0356.com>
  */
 export async function getDingtalkUserIDByPhonenum(
   phonenum: string,

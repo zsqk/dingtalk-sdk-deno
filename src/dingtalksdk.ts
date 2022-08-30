@@ -1,10 +1,15 @@
 import { getDingtalkAccessToken } from './components/accesstoken.ts';
 import {
   addDingtalkApprovalInstance,
+  addDingtalkApprovalProcess,
   getDingtalkApprovalProcess,
 } from './components/approval.ts';
+import { addDingtalkTodo, getDingtalkTodoList } from './components/todo.ts';
 import { getDingtalkUserBaseByCode } from './components/user-login.ts';
-import { getDingtalkUserByUserID } from './components/user.ts';
+import {
+  getDingtalkUserByDeptID,
+  getDingtalkUserByUserID,
+} from './components/user.ts';
 
 export class DingtalkSDK {
   /** appkey, 在钉钉开发者后台获取 */
@@ -109,6 +114,15 @@ export class DingtalkSDK {
   }
 
   /**
+   * [Dingtalk] 获取部门下的用户列表 (获取部门用户详情)
+   * [doc](https://open.dingtalk.com/document/orgapp-server/queries-the-complete-information-of-a-department-user)
+   */
+  async getUserByDeptID(deptID: number) {
+    await this.init();
+    return getDingtalkUserByDeptID(deptID, this.accessToken);
+  }
+
+  /**
    * [Dingtalk] 发起审批实例
    * [doc](https://open.dingtalk.com/document/orgapp-server/create-an-approval-instance)
    */
@@ -135,5 +149,37 @@ export class DingtalkSDK {
   async getApprovalProcess(processCode: string) {
     await this.init();
     return getDingtalkApprovalProcess(processCode, this.accessToken);
+  }
+
+  /**
+   * [Dingtalk] 创建审批流程 (创建或更新审批表单模板)
+   * [doc](https://open.dingtalk.com/document/orgapp-server/create-an-approval-form-template)
+   */
+  async addApprovalProcess(
+    d: Parameters<typeof addDingtalkApprovalProcess>[0],
+  ) {
+    await this.init();
+    return addDingtalkApprovalProcess(d, this.accessToken);
+  }
+
+  /**
+   * [Dingtalk] 创建钉钉待办任务
+   * [doc](https://open.dingtalk.com/document/orgapp-server/add-dingtalk-to-do-task)
+   */
+  async addTodo(d: Parameters<typeof addDingtalkTodo>[0]) {
+    await this.init();
+    return addDingtalkTodo(d, this.accessToken);
+  }
+
+  /**
+   * [Dingtalk] 查看用户钉钉待办任务 (查询企业下用户待办列表)
+   * [doc](https://open.dingtalk.com/document/orgapp-server/query-the-to-do-list-of-enterprise-users)
+   */
+  async getTodoList(
+    unionID: string,
+    opt?: Parameters<typeof getDingtalkTodoList>[2],
+  ) {
+    await this.init();
+    return getDingtalkTodoList(unionID, this.accessToken, opt);
   }
 }
