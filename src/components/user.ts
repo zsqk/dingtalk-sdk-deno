@@ -34,7 +34,7 @@ export async function getDingtalkUserByUserID(
     body: JSON.stringify({ userid: userID }),
   }).then((v) => v.json());
   if (res.errmsg !== 'ok' || res.errcode !== 0) {
-    throw new Error(`dd error: ${res.errmsg}`);
+    throw new Error(`dd error: ${res.errcode} ${res.errmsg}`);
   }
   const {
     name,
