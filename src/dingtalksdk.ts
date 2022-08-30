@@ -110,7 +110,7 @@ export class DingtalkSDK {
 
   /**
    * [Dingtalk] 发起审批实例
-   * https://open.dingtalk.com/document/orgapp-server/create-an-approval-instance
+   * [doc](https://open.dingtalk.com/document/orgapp-server/create-an-approval-instance)
    */
   async addApprovalInstance(d: {
     deptId?: number;
@@ -130,7 +130,7 @@ export class DingtalkSDK {
 
   /**
    * [Dingtalk] 获取审批流程信息 (获取表单 schema)
-   * https://open.dingtalk.com/document/orgapp-server/obtain-the-form-schema
+   * [doc](https://open.dingtalk.com/document/orgapp-server/obtain-the-form-schema)
    */
   async getApprovalProcess(processCode: string) {
     await this.init();
