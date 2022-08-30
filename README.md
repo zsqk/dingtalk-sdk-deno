@@ -2,6 +2,8 @@
 
 Dingtalk SDK for Deno
 
+<a href="https://deno.land/x/dingtalk_sdk"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fdeno-visualizer.danopia.net%2Fshields%2Flatest-version%2Fx%2Fdingtalk_sdk" alt="dingtalk_sdk latest /x/ version" /></a>
+
 为 Deno 设计, 目前支持浏览器环境 (!!!基于安全原因, 不建议在浏览器中直接使用).
 
 实现的钉钉功能:
