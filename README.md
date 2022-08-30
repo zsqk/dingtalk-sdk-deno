@@ -20,6 +20,26 @@ Dingtalk SDK for Deno
 8. 获取部门下的用户列表.
 9. 根据 userid 获取用户详情.
 
+## 使用
+
+使用方式有两种, 一是使用类, 二是使用函数.
+类是函数的包裹, 主要解决函数使用上的基础问题.
+
+类的方式使用, 比如:
+
+```ts
+const dingtalk = new DingtalkSDK({
+  appkey: DINGTALK_APPKEY,
+  appsecret: DINGTALK_APPSECRET,
+  getToken: getTokenWithPg,
+  setToken: setTokenWithPg,
+});
+```
+
+其中, `getTokenWithPg`, `setTokenWithPg` 是从系统缓存读写数据.
+比如 getTokenWithPg 是从 PostgreSQL 数据库中获取 token. setTokenWithPg 是更新
+PostgreSQL 数据库中的 token.
+
 ## 开发
 
 测试时可能需要的环境变量:
