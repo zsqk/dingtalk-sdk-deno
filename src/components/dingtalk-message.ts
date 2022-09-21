@@ -191,277 +191,282 @@ export type MessageType =
  *  - 单按钮卡片消息
  *  - 多按钮卡片消息
  */
-export class DingtalkMessage {
-  protected token: string;
 
-  constructor(token: string) {
-    this.token = token;
+/**
+ * 获取消息类型
+ *
+ * @author zk <zk@go0356.com>
+ */
+function getType(message: MessageType): string {
+  if ('textContent' in message) {
+    return 'text';
+  } else if ('imageMediaID' in message) {
+    return 'image';
+  } else if ('voiceMediaID' in message) {
+    return 'voice';
+  } else if ('fileMediaID' in message) {
+    return 'file';
+  } else if ('linkTitle' in message) {
+    return 'link';
+  } else if ('body' in message) {
+    return 'oa';
+  } else if ('mdTitle' in message) {
+    return 'markdown';
+  } else if ('singleTitle' in message) {
+    return 'single_action_card';
+  } else if ('buttonJSONList' in message) {
+    return 'mult_action_card';
   }
 
-  /**
-   * 发送工作通知
-   *
-   * @param {MessageType} message 消息内容
-   * @param {string} agentID 发送消息时使用的微应用的 AgentID
-   * @param {Array<string>} dingtalkUserIDs 接收者的钉钉 userid 列表，最大长度为 100
-   * @param {Array<string>} dingtalkDeptIDs 接收者的部门 ID 列表（包括子部门），最大长度为 20
-   * @param {boolean} toAllUser 是否发送给企业全部用户
-   *
-   * @author zk <zk@go0356.com>
-   */
-  async corp(
-    message: MessageType,
-    agentID: string,
-    dingtalkUserIDs?: string[],
-    dingtalkDeptIDs?: string[],
-    toAllUser?: boolean
-  ): Promise<Resp> {
-    // 验证接收者不为空
-    if (
-      (dingtalkUserIDs === undefined || dingtalkUserIDs.length === 0) &&
-      (dingtalkDeptIDs === undefined || dingtalkDeptIDs?.length === 0) &&
-      toAllUser === false
-    ) {
-      throw Error('dingtalk-message error: no receivers set');
-    }
+  return 'unknown';
+}
 
-    const url = `https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2?access_token=${this.token}`;
-    const data: {
-      msg: Record<string, unknown>;
-      agent_id: string;
-      userid_list?: string;
-      dept_id_list?: string;
-      to_all_user?: boolean;
-    } = {
-      agent_id: agentID,
-      msg: this.getMessageBody(message),
-    };
+/**
+ * 生成消息 JSON 字符串
+ *
+ * @author zk <zk@go0356.com>
+ */
+function getMessageBody(message: MessageType): Record<string, unknown> {
+  let data: MessageType;
+  switch (getType(message)) {
+    case 'text':
+      data = message as Text;
+      return {
+        msgtype: 'text',
+        text: {
+          content: data.textContent,
+        },
+      };
+    case 'image':
+      data = message as Image;
+      return {
+        msgtype: 'image',
+        image: {
+          media_id: data.imageMediaID,
+        },
+      };
+    case 'voice':
+      data = message as Voice;
+      return {
+        msgtype: 'voice',
+        voice: {
+          media_id: data.voiceMediaID,
+          duration: data.duration,
+        },
+      };
+    case 'file':
+      data = message as File;
+      return {
+        msgtype: 'file',
+        file: {
+          media_id: data.fileMediaID,
+        },
+      };
+    case 'link':
+      data = message as Link;
+      return {
+        msgtype: 'link',
+        link: {
+          messageUrl: data.messageURL,
+          picUrl: data.pictureURL,
+          title: data.linkTitle,
+          text: data.linkText,
+        },
+      };
+    case 'oa':
+      data = message as OA;
+      return {
+        msgtype: 'oa',
+        oa: {
+          message_url: data.messageURL,
+          head: {
+            bgcolor: data.head.bgcolor,
+            text: data.head.text,
+          },
+          body: {
+            title: data.body.title,
+            form: data.body.form,
+            rich: data.body.rich,
+            content: data.body.content,
+            image: data.body.image,
+            file_count: data.body.fileCount,
+            author: data.body.author,
+          },
+        },
+      };
+    case 'markdown':
+      data = message as Markdown;
+      return {
+        msgtype: 'markdown',
+        markdown: {
+          title: data.mdTitle,
+          text: data.mdText,
+        },
+      };
+    case 'single_action_card':
+      data = message as SingleCard;
+      return {
+        msgtype: 'action_card',
+        action_card: {
+          title: data.title,
+          markdown: data.markdown,
+          single_title: data.singleTitle,
+          single_url: data.singleURL,
+        },
+      };
+    case 'mult_action_card':
+      data = message as MultCard;
+      return {
+        msgtype: 'action_card',
+        action_card: {
+          title: data.title,
+          markdown: data.markdown,
+          btn_orientation: 1,
+          btn_json_list: data.buttonJSONList,
+        },
+      };
+    default:
+      console.log('dingtalk-message error: invalid message type');
+      throw new Error('dingtalk-message error: invalid message type');
+  }
+}
 
-    data.userid_list =
-      dingtalkUserIDs === undefined ? undefined : dingtalkUserIDs.join(',');
-    data.dept_id_list =
-      dingtalkDeptIDs === undefined ? undefined : dingtalkDeptIDs.join(',');
-    data.to_all_user = toAllUser === undefined ? false : toAllUser;
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    const result = await res.json();
-    const resp: Resp = {
-      code: result.errcode,
-      message: result.errmsg,
-    };
-
-    return resp;
+/**
+ * 发送工作通知
+ *
+ * @param {MessageType} message 消息内容
+ * @param {string} agentID 发送消息时使用的微应用的 AgentID
+ * @param {Array<string>} dingtalkUserIDs 接收者的钉钉 userid 列表，最大长度为 100
+ * @param {Array<string>} dingtalkDeptIDs 接收者的部门 ID 列表（包括子部门），最大长度为 20
+ * @param {boolean} toAllUser 是否发送给企业全部用户
+ *
+ * @author zk <zk@go0356.com>
+ */
+export async function corp(
+  { message, agentID, dingtalkUserIDs, dingtalkDeptIDs, toAllUser }: {
+    message: MessageType;
+    agentID: string;
+    dingtalkUserIDs?: string[];
+    dingtalkDeptIDs?: string[];
+    toAllUser?: boolean;
+  },
+  token: string,
+): Promise<Resp> {
+  // 验证接收者不为空
+  if (
+    (dingtalkUserIDs === undefined || dingtalkUserIDs.length === 0) &&
+    (dingtalkDeptIDs === undefined || dingtalkDeptIDs?.length === 0) &&
+    toAllUser === false
+  ) {
+    throw Error('dingtalk-message error: no receivers set');
   }
 
-  /**
-   * 发送企业群消息
-   *
-   * @param {MessageType} message 消息内容
-   * @param {string} chatID 群会话的 ID
-   *
-   * @author zk <zk@go0356.com>
-   */
-  async group(message: MessageType, chatID: string): Promise<Resp> {
-    const url = `https://oapi.dingtalk.com/chat/send?access_token=${this.token}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chatid: chatID,
-        msg: this.getMessageBody(message),
-      }),
-    });
+  const url =
+    `https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2?access_token=${token}`;
+  const data: {
+    msg: Record<string, unknown>;
+    agent_id: string;
+    userid_list?: string;
+    dept_id_list?: string;
+    to_all_user?: boolean;
+  } = {
+    agent_id: agentID,
+    msg: getMessageBody(message),
+  };
 
-    const result = await res.json();
-    const resp: Resp = {
-      code: result.errcode,
-      message: result.errmsg,
-    };
+  data.userid_list = dingtalkUserIDs === undefined
+    ? undefined
+    : dingtalkUserIDs.join(',');
+  data.dept_id_list = dingtalkDeptIDs === undefined
+    ? undefined
+    : dingtalkDeptIDs.join(',');
+  data.to_all_user = toAllUser === undefined ? false : toAllUser;
 
-    return resp;
-  }
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
 
-  /**
-   * 发送普通消息
-   *
-   * @param {MessageType} message 消息内容
-   * @param {string} dingtalkUserID 消息发送者的钉钉 userid
-   * @param {string} chatID 群会话或者个人会话的 ID
-   *
-   * @author zk <zk@go0356.com>
-   */
-  async chat(
-    message: MessageType,
-    dingtalkUserID: string,
-    chatID: string
-  ): Promise<Resp> {
-    const url = `https://oapi.dingtalk.com/message/send_to_conversation?access_token=${this.token}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sender: dingtalkUserID,
-        cid: chatID,
-        msg: this.getMessageBody(message),
-      }),
-    });
+  const result = await res.json();
+  const resp: Resp = {
+    code: result.errcode,
+    message: result.errmsg,
+  };
 
-    const result = await res.json();
-    const resp: Resp = {
-      code: result.errcode,
-      message: result.errmsg,
-    };
+  return resp;
+}
 
-    return resp;
-  }
+/**
+ * 发送普通消息
+ *
+ * @param {MessageType} message 消息内容
+ * @param {string} dingtalkUserID 消息发送者的钉钉 userid
+ * @param {string} chatID 群会话或者个人会话的 ID
+ *
+ * @author zk <zk@go0356.com>
+ */
+export async function chat(
+  message: MessageType,
+  dingtalkUserID: string,
+  chatID: string,
+  token: string,
+): Promise<Resp> {
+  const url =
+    `https://oapi.dingtalk.com/message/send_to_conversation?access_token=${token}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: dingtalkUserID,
+      cid: chatID,
+      msg: getMessageBody(message),
+    }),
+  });
 
-  /**
-   * 生成消息 JSON 字符串
-   *
-   * @author zk <zk@go0356.com>
-   */
-  private getMessageBody(message: MessageType): Record<string, unknown> {
-    let data: MessageType;
-    switch (this.getType(message)) {
-      case 'text':
-        data = message as Text;
-        return {
-          msgtype: 'text',
-          text: {
-            content: data.textContent,
-          },
-        };
-      case 'image':
-        data = message as Image;
-        return {
-          msgtype: 'image',
-          image: {
-            media_id: data.imageMediaID,
-          },
-        };
-      case 'voice':
-        data = message as Voice;
-        return {
-          msgtype: 'voice',
-          voice: {
-            media_id: data.voiceMediaID,
-            duration: data.duration,
-          },
-        };
-      case 'file':
-        data = message as File;
-        return {
-          msgtype: 'file',
-          file: {
-            media_id: data.fileMediaID,
-          },
-        };
-      case 'link':
-        data = message as Link;
-        return {
-          msgtype: 'link',
-          link: {
-            messageUrl: data.messageURL,
-            picUrl: data.pictureURL,
-            title: data.linkTitle,
-            text: data.linkText,
-          },
-        };
-      case 'oa':
-        data = message as OA;
-        return {
-          msgtype: 'oa',
-          oa: {
-            message_url: data.messageURL,
-            head: {
-              bgcolor: data.head.bgcolor,
-              text: data.head.text,
-            },
-            body: {
-              title: data.body.title,
-              form: data.body.form,
-              rich: data.body.rich,
-              content: data.body.content,
-              image: data.body.image,
-              file_count: data.body.fileCount,
-              author: data.body.author,
-            },
-          },
-        };
-      case 'markdown':
-        data = message as Markdown;
-        return {
-          msgtype: 'markdown',
-          markdown: {
-            title: data.mdTitle,
-            text: data.mdText,
-          },
-        };
-      case 'single_action_card':
-        data = message as SingleCard;
-        return {
-          msgtype: 'action_card',
-          action_card: {
-            title: data.title,
-            markdown: data.markdown,
-            single_title: data.singleTitle,
-            single_url: data.singleURL,
-          },
-        };
-      case 'mult_action_card':
-        data = message as MultCard;
-        return {
-          msgtype: 'action_card',
-          action_card: {
-            title: data.title,
-            markdown: data.markdown,
-            btn_orientation: 1,
-            btn_json_list: data.buttonJSONList,
-          },
-        };
-      default:
-        console.log('dingtalk-message error: invalid message type');
-        throw new Error('dingtalk-message error: invalid message type');
-    }
-  }
+  const result = await res.json();
+  const resp: Resp = {
+    code: result.errcode,
+    message: result.errmsg,
+  };
 
-  /**
-   * 获取消息类型
-   *
-   * @author zk <zk@go0356.com>
-   */
-  private getType(message: MessageType): string {
-    if ('textContent' in message) {
-      return 'text';
-    } else if ('imageMediaID' in message) {
-      return 'image';
-    } else if ('voiceMediaID' in message) {
-      return 'voice';
-    } else if ('fileMediaID' in message) {
-      return 'file';
-    } else if ('linkTitle' in message) {
-      return 'link';
-    } else if ('body' in message) {
-      return 'oa';
-    } else if ('mdTitle' in message) {
-      return 'markdown';
-    } else if ('singleTitle' in message) {
-      return 'single_action_card';
-    } else if ('buttonJSONList' in message) {
-      return 'mult_action_card';
-    }
+  return resp;
+}
 
-    return 'unknown';
-  }
+/**
+ * 发送企业群消息
+ *
+ * @param {MessageType} message 消息内容
+ * @param {string} chatID 群会话的 ID
+ *
+ * @author zk <zk@go0356.com>
+ */
+export async function group(
+  message: MessageType,
+  chatID: string,
+  token: string,
+): Promise<Resp> {
+  const url = `https://oapi.dingtalk.com/chat/send?access_token=${token}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      chatid: chatID,
+      msg: getMessageBody(message),
+    }),
+  });
+
+  const result = await res.json();
+  const resp: Resp = {
+    code: result.errcode,
+    message: result.errmsg,
+  };
+
+  return resp;
 }
