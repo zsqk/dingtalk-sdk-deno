@@ -6,8 +6,8 @@ import {
 import { assertEquals } from 'https://deno.land/std@0.152.0/testing/asserts.ts';
 
 const DINGTALK_ACCESSTOKEN = Deno.env.get('DINGTALK_ACCESSTOKEN') ?? '';
-const DINGTALK_USERID = Deno.env.get('DINGTALK_USERID') ?? '';
-const DINGTALK_PHONENUM = Deno.env.get('DINGTALK_PHONENUM') ?? '';
+const DINGTALK_USERID = Deno.env.get('TEST_DINGTALK_USERID') ?? '';
+const DINGTALK_PHONENUM = Deno.env.get('TEST_DINGTALK_PHONENUM') ?? '';
 
 Deno.test('getDingtalkUserByUserID', async () => {
   const res = await getDingtalkUserByUserID(

@@ -9,8 +9,8 @@ import {
 } from './approval.ts';
 
 const DINGTALK_ACCESSTOKEN = Deno.env.get('DINGTALK_ACCESSTOKEN') ?? '';
-const DINGTALK_USERID = Deno.env.get('DINGTALK_USERID') ?? '';
-const DINGTALK_PROCESSCODE = Deno.env.get('DINGTALK_PROCESSCODE') ?? '';
+const DINGTALK_USERID = Deno.env.get('TEST_DINGTALK_USERID') ?? '';
+const DINGTALK_PROCESSCODE = Deno.env.get('TEST_DINGTALK_PROCESSCODE') ?? '';
 
 Deno.test('addDingtalkApprovalInstance-base', async () => {
   const res = await addDingtalkApprovalInstance({
