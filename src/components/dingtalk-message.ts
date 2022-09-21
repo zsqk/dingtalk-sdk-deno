@@ -331,9 +331,8 @@ function getMessageBody(message: MessageType): Record<string, unknown> {
 }
 
 /**
- * 发送工作通知
- *
- * 工作通知文档：{@link https://open.dingtalk.com/document/orgapp-server/asynchronous-sending-of-enterprise-session-messages}
+ * [Dingtalk] 发送工作通知
+ * [doc](https://open.dingtalk.com/document/orgapp-server/asynchronous-sending-of-enterprise-session-messages)
  *
  * @author zk <zk@go0356.com>
  */
@@ -410,8 +409,10 @@ export async function sendDingtalkCorpMessage(
 }
 
 /**
- * 发送普通消息
- * 普通消息文档：{@link https://open.dingtalk.com/document/orgapp-server/send-normal-messages}
+ * [Dingtalk] 发送普通消息
+ * [doc](https://open.dingtalk.com/document/orgapp-server/send-normal-messages)
+ *
+ * 需要前端协作的功能.
  *
  * @author zk <zk@go0356.com>
  */
@@ -454,8 +455,8 @@ export async function sendDingtalkChatMessage(
 }
 
 /**
- * 发送企业群消息
- * 群消息文档：{@link https://open.dingtalk.com/document/orgapp-server/enterprise-group-message-overview}
+ * [Dingtalk] 发送企业群消息
+ * [doc](https://open.dingtalk.com/document/orgapp-server/enterprise-group-message-overview)
  *
  * @author zk <zk@go0356.com>
  */
