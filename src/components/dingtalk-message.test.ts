@@ -4,14 +4,15 @@ import { getDingtalkAccessToken } from 'https://deno.land/x/dingtalk_sdk@v0.0.2/
 const DINGTALK_AGENTID = Deno.env.get('DINGTALK_AGENTID')!;
 const DINGTALK_APPKEY = Deno.env.get('DINGTALK_APPKEY')!;
 const DINGTALK_APPSECRET = Deno.env.get('DINGTALK_APPSECRET')!;
-const TEST_DINGTALK_USERID = Deno.env.get('TEST_DINGTALK_USERID')!;
+const TEST_DINGTALK_USERID = Deno.env.get('DINGTALK_USERID')!;
 
 import {
-  DingtalkMessage,
   Link,
   Markdown,
   MultCard,
   OA,
+  sendDingtalkCorpMessage,
+  sendDingtalkGroupMessage,
   SingleCard,
   Text,
 } from './dingtalk-message.ts';
@@ -30,8 +31,11 @@ Deno.test('corpText', async () => {
     DINGTALK_APPSECRET,
   );
   const msg: Text = { textContent: 'test dingtalk corp msg' };
-  const dm = new DingtalkMessage(token.accessToken);
-  const res = await dm.corp(msg, DINGTALK_AGENTID, [dingtalkUserID]);
+  const res = await sendDingtalkCorpMessage({
+    message: msg,
+    agentID: DINGTALK_AGENTID,
+    dingtalkUserIDs: [dingtalkUserID],
+  }, token.accessToken);
   console.log(res, res.code, res.message);
   assertEquals(res.code, 0);
 });
@@ -52,8 +56,11 @@ Deno.test('corpLink', async () => {
     messageURL: 'https://zsqk.com.cn',
     pictureURL: '@mediaidofimage',
   };
-  const dm = new DingtalkMessage(token.accessToken);
-  const res = await dm.corp(msg, DINGTALK_AGENTID, [dingtalkUserID]);
+  const res = await sendDingtalkCorpMessage({
+    message: msg,
+    agentID: DINGTALK_AGENTID,
+    dingtalkUserIDs: [dingtalkUserID],
+  }, token.accessToken);
   console.log(res, res.code, res.message);
   assertEquals(res.code, 0);
 });
@@ -93,8 +100,11 @@ Deno.test('corpOA', async () => {
       author: 'tester',
     },
   };
-  const dm = new DingtalkMessage(token.accessToken);
-  const res = await dm.corp(msg, DINGTALK_AGENTID, [dingtalkUserID]);
+  const res = await sendDingtalkCorpMessage({
+    message: msg,
+    agentID: DINGTALK_AGENTID,
+    dingtalkUserIDs: [dingtalkUserID],
+  }, token.accessToken);
   console.log(res, res.code, res.message);
   assertEquals(res.code, 0);
 });
@@ -114,8 +124,11 @@ Deno.test('corpMarkdown', async () => {
     mdText:
       '# AAA\n**粗体**: AAA*斜体*BBB\n\n # BBB\n- zsqk\n- [zsqk-link](https://zsqk.com.cn)',
   };
-  const dm = new DingtalkMessage(token.accessToken);
-  const res = await dm.corp(msg, DINGTALK_AGENTID, [dingtalkUserID]);
+  const res = await sendDingtalkCorpMessage({
+    message: msg,
+    agentID: DINGTALK_AGENTID,
+    dingtalkUserIDs: [dingtalkUserID],
+  }, token.accessToken);
   console.log(res, res.code, res.message);
   assertEquals(res.code, 0);
 });
@@ -138,8 +151,11 @@ Deno.test('corpSingleCard', async () => {
     singleURL: 'https://zsqk.com.cn',
   };
 
-  const dm = new DingtalkMessage(token.accessToken);
-  const res = await dm.corp(msg, DINGTALK_AGENTID, [dingtalkUserID]);
+  const res = await sendDingtalkCorpMessage({
+    message: msg,
+    agentID: DINGTALK_AGENTID,
+    dingtalkUserIDs: [dingtalkUserID],
+  }, token.accessToken);
   console.log(res, res.code, res.message);
   assertEquals(res.code, 0);
 });
@@ -163,8 +179,11 @@ Deno.test('corpMultCard', async () => {
     ],
   };
 
-  const dm = new DingtalkMessage(token.accessToken);
-  const res = await dm.corp(msg, DINGTALK_AGENTID, [dingtalkUserID]);
+  const res = await sendDingtalkCorpMessage({
+    message: msg,
+    agentID: DINGTALK_AGENTID,
+    dingtalkUserIDs: [dingtalkUserID],
+  }, token.accessToken);
   console.log(res, res.code, res.message);
   assertEquals(res.code, 0);
 });
@@ -208,8 +227,7 @@ Deno.test('group', async () => {
 
   // 发送群消息
   const msg: Text = { textContent: 'test dingtalk group msg' };
-  const dm = new DingtalkMessage(token.accessToken);
-  const resp = await dm.group(msg, chatid);
+  const resp = await sendDingtalkGroupMessage(msg, chatid, token.accessToken);
   console.log(resp, resp.code, resp.message);
   assertEquals(resp.code, 0);
 });

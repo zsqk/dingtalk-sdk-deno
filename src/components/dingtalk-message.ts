@@ -9,6 +9,8 @@
  *  const res = await dm.corp(DINGTALK_AGENTID, msg, [dingtalkUserID]); // 发送工作通知
  *  const res = await dm.group(msg, chatid);                            // 发送群消息
  *  const res = await dm.chat(msg, dingtalkUserID, chatid);             // 发送普通消息
+ *
+ * 权限相关: qyapi_chat_manage, qyapi_chat_read
  */
 
 /**
