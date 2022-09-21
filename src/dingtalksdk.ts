@@ -4,6 +4,10 @@ import {
   addDingtalkApprovalProcess,
   getDingtalkApprovalProcess,
 } from './components/approval.ts';
+import {
+  sendDingtalkCorpMessage,
+  sendDingtalkGroupMessage,
+} from './components/dingtalk-message.ts';
 import { addDingtalkTodo, getDingtalkTodoList } from './components/todo.ts';
 import { getDingtalkUserBaseByCode } from './components/user-login.ts';
 import {
@@ -181,5 +185,28 @@ export class DingtalkSDK {
   ) {
     await this.init();
     return getDingtalkTodoList(unionID, this.accessToken, opt);
+  }
+
+  /**
+   * [Dingtalk] 发送工作通知
+   * [doc](https://open.dingtalk.com/document/orgapp-server/asynchronous-sending-of-enterprise-session-messages)
+   */
+  async sendDingtalkCorpMessage(
+    d: Parameters<typeof sendDingtalkCorpMessage>[0],
+  ) {
+    await this.init();
+    return sendDingtalkCorpMessage(d, this.accessToken);
+  }
+
+  /**
+   * [Dingtalk] 发送消息到企业群
+   * [doc](https://open.dingtalk.com/document/orgapp-server/send-group-messages)
+   */
+  async sendDingtalkGroupMessage(
+    message: Parameters<typeof sendDingtalkGroupMessage>[0],
+    chatID: Parameters<typeof sendDingtalkGroupMessage>[1],
+  ) {
+    await this.init();
+    return sendDingtalkGroupMessage(message, chatID, this.accessToken);
   }
 }

@@ -455,8 +455,8 @@ export async function sendDingtalkChatMessage(
 }
 
 /**
- * [Dingtalk] 发送企业群消息
- * [doc](https://open.dingtalk.com/document/orgapp-server/enterprise-group-message-overview)
+ * [Dingtalk] 发送消息到企业群
+ * [doc](https://open.dingtalk.com/document/orgapp-server/send-group-messages)
  *
  * @author zk <zk@go0356.com>
  */
