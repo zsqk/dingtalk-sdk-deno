@@ -1,9 +1,6 @@
 /**
  * 钉钉消息模块
  *
- * 工作通知文档：{@link https://open.dingtalk.com/document/orgapp-server/asynchronous-sending-of-enterprise-session-messages}
- * 群消息文档：{@link https://open.dingtalk.com/document/orgapp-server/enterprise-group-message-overview}
- * 普通消息文档：{@link https://open.dingtalk.com/document/orgapp-server/send-normal-messages}
  * 消息类型文档：{@link https://open.dingtalk.com/document/orgapp-server/message-types-and-data-format}
  *
  * @example
@@ -334,20 +331,31 @@ function getMessageBody(message: MessageType): Record<string, unknown> {
 /**
  * 发送工作通知
  *
- * @param {MessageType} message 消息内容
- * @param {string} agentID 发送消息时使用的微应用的 AgentID
- * @param {Array<string>} dingtalkUserIDs 接收者的钉钉 userid 列表，最大长度为 100
- * @param {Array<string>} dingtalkDeptIDs 接收者的部门 ID 列表（包括子部门），最大长度为 20
- * @param {boolean} toAllUser 是否发送给企业全部用户
+ * 工作通知文档：{@link https://open.dingtalk.com/document/orgapp-server/asynchronous-sending-of-enterprise-session-messages}
  *
  * @author zk <zk@go0356.com>
  */
-export async function corp(
+export async function sendDingtalkCorpMessage(
   { message, agentID, dingtalkUserIDs, dingtalkDeptIDs, toAllUser }: {
+    /**
+     * 消息内容
+     */
     message: MessageType;
+    /**
+     * 发送消息时使用的微应用的 AgentID
+     */
     agentID: string;
+    /**
+     * 接收者的钉钉 userid 列表，最大长度为 100
+     */
     dingtalkUserIDs?: string[];
+    /**
+     * 接收者的部门 ID 列表（包括子部门），最大长度为 20
+     */
     dingtalkDeptIDs?: string[];
+    /**
+     * 是否发送给企业全部用户
+     */
     toAllUser?: boolean;
   },
   token: string,
@@ -401,16 +409,22 @@ export async function corp(
 
 /**
  * 发送普通消息
- *
- * @param {MessageType} message 消息内容
- * @param {string} dingtalkUserID 消息发送者的钉钉 userid
- * @param {string} chatID 群会话或者个人会话的 ID
+ * 普通消息文档：{@link https://open.dingtalk.com/document/orgapp-server/send-normal-messages}
  *
  * @author zk <zk@go0356.com>
  */
-export async function chat(
+export async function sendDingtalkChatMessage(
+  /**
+   * 消息内容
+   */
   message: MessageType,
+  /**
+   * 消息发送者的钉钉 userid
+   */
   dingtalkUserID: string,
+  /**
+   * 群会话或者个人会话的 ID
+   */
   chatID: string,
   token: string,
 ): Promise<Resp> {
@@ -439,14 +453,18 @@ export async function chat(
 
 /**
  * 发送企业群消息
- *
- * @param {MessageType} message 消息内容
- * @param {string} chatID 群会话的 ID
+ * 群消息文档：{@link https://open.dingtalk.com/document/orgapp-server/enterprise-group-message-overview}
  *
  * @author zk <zk@go0356.com>
  */
-export async function group(
+export async function sendDingtalkGroupMessage(
+  /**
+   * 消息内容
+   */
   message: MessageType,
+  /**
+   * 群会话的 ID
+   */
   chatID: string,
   token: string,
 ): Promise<Resp> {
