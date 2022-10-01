@@ -49,12 +49,18 @@ export async function getDingtalkUserBaseByCode(
   } = res.result;
   if (
     typeof deviceID !== 'string' ||
-    typeof name !== 'string' ||
-    typeof unionID !== 'string' ||
-    typeof userID !== 'string' ||
     typeof isAdmin !== 'boolean'
   ) {
-    throw TypeError('dd error');
+    throw TypeError('dd error deviceID/isAdmin');
+  }
+  if (typeof unionID !== 'string') {
+    throw TypeError('dd error unionID');
+  }
+  if (typeof userID !== 'string') {
+    throw TypeError('dd error userID');
+  }
+  if (typeof name !== 'string') {
+    throw TypeError('dd error name');
   }
   if (sysLevel !== 1 && sysLevel !== 2 && sysLevel !== 100 && sysLevel !== 0) {
     throw TypeError('dd error sysLevel');
