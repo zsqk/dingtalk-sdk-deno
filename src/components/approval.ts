@@ -117,3 +117,21 @@ interface FormItem {
     required: boolean;
   };
 }
+
+/**
+ * [Dingtalk] 根据实例ID获取审批
+ * [doc](https://open.dingtalk.com/document/orgapp-server/obtains-the-details-of-a-single-approval-instance-pop)
+ *
+ * @author Macong <504542565@qq.com>
+ */
+export async function getDingtalkApprovalByInstanceID(
+  InstanceID: string,
+  token: string,
+) {
+  const path = '/v1.0/workflow/processInstances';
+  const res = await dingtalkFetch(path, token, {
+    query: [['processInstanceId', InstanceID]],
+    method: 'GET',
+  });
+  return res.body.result;
+}
