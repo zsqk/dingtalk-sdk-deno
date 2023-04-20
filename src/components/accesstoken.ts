@@ -9,9 +9,9 @@ export async function getDingtalkAccessToken(
   appsecret: string,
 ): Promise<{
   accessToken: string;
+  /** 过期时间戳, 秒 */
   expireAt: number;
 }> {
-  const now = Math.trunc(Date.now() / 1000);
   const q = new URLSearchParams({
     appkey,
     appsecret,
@@ -22,6 +22,7 @@ export async function getDingtalkAccessToken(
   if (res.errmsg !== 'ok' || res.errcode !== 0) {
     throw new Error(`dd error: ${res.errmsg}`);
   }
+  const now = Math.trunc(Date.now() / 1000);
   const accessToken = res.access_token;
   const expireAt = now + res.expires_in;
   if (typeof accessToken !== 'string') {

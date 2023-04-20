@@ -1,3 +1,5 @@
+import { delay } from './common/delay.ts';
+import { WithLog } from './common/log.ts';
 import { getDingtalkAccessToken } from './components/accesstoken.ts';
 import {
   addDingtalkApprovalInstance,
@@ -15,7 +17,12 @@ import {
   getDingtalkUserByUserID,
 } from './components/user.ts';
 
-export class DingtalkSDK {
+/** 过期裕量, ms */
+const ALLOWANCE_TIME = 60000;
+/** 超时时间, ms */
+const TIMEOUT = 3000;
+
+export class DingtalkSDK extends WithLog {
   /** appkey, 在钉钉开发者后台获取 */
   readonly appkey: string;
 
@@ -43,13 +50,16 @@ export class DingtalkSDK {
   private tokenExpireAt = 0;
 
   constructor(
-    { appkey, appsecret, getToken, setToken }: {
+    { appkey, appsecret, getToken, setToken, isDebug = false }: {
       appkey: string;
       appsecret: string;
       getToken?: () => Promise<{ accessToken: string; tokenExpireAt: number }>;
       setToken?: (accessToken: string, tokenExpireAt: number) => Promise<void>;
+      /** 调试模式, 默认 false */
+      isDebug?: boolean;
     },
   ) {
+    super(isDebug);
     this.appkey = appkey;
     this.appsecret = appsecret;
     getToken && (this.getToken = getToken);
@@ -61,41 +71,71 @@ export class DingtalkSDK {
    * @param opt
    * @returns
    */
-  async init(opt: { token?: string; tokenExpireAt?: number } = {}) {
+  async init(opt: {
+    /** 如果首次想避免自动生成 token, 可以直接传入 */
+    token?: string;
+    /** 如果想重置 token 的过期时间, 可以直接传入 */
+    tokenExpireAt?: number;
+  } = {}) {
     if (opt.token) {
+      this.log('log', '使用了外部的 token', opt);
       this.accessToken = opt.token;
-      if (opt.tokenExpireAt) {
-        this.tokenExpireAt = opt.tokenExpireAt;
-      } else {
-        this.tokenExpireAt = Date.now() - 60000;
-      }
-      return;
+    }
+    if (opt.tokenExpireAt) {
+      this.log('log', '使用了外部的 tokenExpireAt', opt);
+      this.tokenExpireAt = opt.tokenExpireAt;
     }
 
     // 不过期则直接使用
     if (this.tokenExpireAt > Date.now()) {
+      this.log(
+        'log',
+        '找到组件中的 token, 直接使用',
+        { accessToken: this.accessToken, tokenExpireAt: this.tokenExpireAt },
+      );
       return;
     }
 
     // 从缓存中获取
     if (this.getToken) {
-      const res = await this.getToken();
-      const tokenExpireAt = res.tokenExpireAt - 60000;
-      if (tokenExpireAt > Date.now()) {
-        this.accessToken = res.accessToken;
-        this.tokenExpireAt = tokenExpireAt;
-        return;
+      this.log('log', '准备读取 accessToken 缓存');
+      const res = await Promise.race([
+        this.getToken().catch((err) => {
+          if (err instanceof Error) {
+            return err;
+          }
+          return new Error(String(err));
+        }),
+        delay(TIMEOUT).then(() => new Error('getToken timeout')),
+      ]);
+      if (res instanceof Error) {
+        this.log('error', '读取 accessToken 缓存失败', res);
+      } else {
+        this.log('log', '已经读取 accessToken 缓存', res);
+        const tokenExpireAt = res.tokenExpireAt - ALLOWANCE_TIME;
+        if (tokenExpireAt > Date.now()) {
+          this.log('log', 'accessToken 缓存已使用');
+          this.accessToken = res.accessToken;
+          this.tokenExpireAt = tokenExpireAt;
+          return;
+        }
+        this.log('log', 'accessToken 缓存已超时');
       }
     }
 
     // 重新获得 token
     const res = await getDingtalkAccessToken(this.appkey, this.appsecret);
     this.accessToken = res.accessToken;
-    this.tokenExpireAt = res.expireAt * 1000 - 60000;
+    this.tokenExpireAt = res.expireAt * 1000 - ALLOWANCE_TIME;
 
     // 写入缓存
     if (this.setToken) {
-      this.setToken(this.accessToken, this.tokenExpireAt);
+      this.log('log', '开始写入缓存');
+      this.setToken(this.accessToken, this.tokenExpireAt).then(() => {
+        this.log('log', '写入缓存成功');
+      }).catch((err) => {
+        this.log('error', '写入缓存失败', err);
+      });
     }
   }
 
