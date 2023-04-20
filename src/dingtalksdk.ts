@@ -108,7 +108,12 @@ export class DingtalkSDK extends WithLog {
 
     // 写入缓存
     if (this.setToken) {
-      this.setToken(this.accessToken, this.tokenExpireAt);
+      this.log('log', '开始写入缓存');
+      this.setToken(this.accessToken, this.tokenExpireAt).then(() => {
+        this.log('log', '写入缓存成功');
+      }).catch((err) => {
+        this.log('error', '写入缓存失败', err);
+      });
     }
   }
 
