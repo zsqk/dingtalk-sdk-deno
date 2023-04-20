@@ -83,7 +83,9 @@ export class DingtalkSDK extends WithLog {
 
     // 从缓存中获取
     if (this.getToken) {
+      this.log('log', '准备从缓存中获取 accessToken');
       const res = await this.getToken();
+      this.log('log', '已经从缓存中获取 accessToken', res);
       const tokenExpireAt = res.tokenExpireAt - 60000;
       if (tokenExpireAt > Date.now()) {
         this.accessToken = res.accessToken;
