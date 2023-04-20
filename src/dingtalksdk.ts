@@ -88,6 +88,11 @@ export class DingtalkSDK extends WithLog {
 
     // 不过期则直接使用
     if (this.tokenExpireAt > Date.now()) {
+      this.log(
+        'log',
+        '找到组件中的 token, 直接使用',
+        { accessToken: this.accessToken, tokenExpireAt: this.tokenExpireAt },
+      );
       return;
     }
 
