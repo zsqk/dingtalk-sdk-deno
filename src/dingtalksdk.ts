@@ -65,15 +65,19 @@ export class DingtalkSDK extends WithLog {
    * @param opt
    * @returns
    */
-  async init(opt: { token?: string; tokenExpireAt?: number } = {}) {
+  async init(opt: {
+    /** 如果首次想避免自动生成 token, 可以直接传入 */
+    token?: string;
+    /** 如果想重置 token 的过期时间, 可以直接传入 */
+    tokenExpireAt?: number;
+  } = {}) {
     if (opt.token) {
+      this.log('log', '使用了外部的 token', opt);
       this.accessToken = opt.token;
-      if (opt.tokenExpireAt) {
-        this.tokenExpireAt = opt.tokenExpireAt;
-      } else {
-        this.tokenExpireAt = Date.now() - 60000;
-      }
-      return;
+    }
+    if (opt.tokenExpireAt) {
+      this.log('log', '使用了外部的 tokenExpireAt', opt);
+      this.tokenExpireAt = opt.tokenExpireAt;
     }
 
     // 不过期则直接使用
