@@ -1,3 +1,4 @@
+import { WithLog } from './common/log.ts';
 import { getDingtalkAccessToken } from './components/accesstoken.ts';
 import {
   addDingtalkApprovalInstance,
@@ -15,7 +16,7 @@ import {
   getDingtalkUserByUserID,
 } from './components/user.ts';
 
-export class DingtalkSDK {
+export class DingtalkSDK extends WithLog {
   /** appkey, 在钉钉开发者后台获取 */
   readonly appkey: string;
 
@@ -43,13 +44,16 @@ export class DingtalkSDK {
   private tokenExpireAt = 0;
 
   constructor(
-    { appkey, appsecret, getToken, setToken }: {
+    { appkey, appsecret, getToken, setToken, isDebug = false }: {
       appkey: string;
       appsecret: string;
       getToken?: () => Promise<{ accessToken: string; tokenExpireAt: number }>;
       setToken?: (accessToken: string, tokenExpireAt: number) => Promise<void>;
+      /** 调试模式, 默认 false */
+      isDebug?: boolean;
     },
   ) {
+    super(isDebug);
     this.appkey = appkey;
     this.appsecret = appsecret;
     getToken && (this.getToken = getToken);
