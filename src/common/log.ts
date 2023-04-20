@@ -10,13 +10,13 @@ export class WithLog {
     if (this.isDebug) {
       switch (level) {
         case 'log':
-          console.log(...info);
+          console.log(new Date().toString(), ...info);
           break;
         case 'error':
-          console.log(...info);
+          console.log(new Date().toString(), ...info);
           break;
         case 'warn':
-          console.log(...info);
+          console.log(new Date().toString(), ...info);
           break;
         default:
           break;
