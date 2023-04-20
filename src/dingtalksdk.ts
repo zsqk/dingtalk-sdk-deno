@@ -16,6 +16,9 @@ import {
   getDingtalkUserByUserID,
 } from './components/user.ts';
 
+/** 过期裕量, ms */
+const ALLOWANCE_TIME = 60000;
+
 export class DingtalkSDK extends WithLog {
   /** appkey, 在钉钉开发者后台获取 */
   readonly appkey: string;
@@ -90,7 +93,7 @@ export class DingtalkSDK extends WithLog {
       this.log('log', '准备从缓存中获取 accessToken');
       const res = await this.getToken();
       this.log('log', '已经从缓存中获取 accessToken', res);
-      const tokenExpireAt = res.tokenExpireAt - 60000;
+      const tokenExpireAt = res.tokenExpireAt - ALLOWANCE_TIME;
       if (tokenExpireAt > Date.now()) {
         this.accessToken = res.accessToken;
         this.tokenExpireAt = tokenExpireAt;
@@ -101,7 +104,7 @@ export class DingtalkSDK extends WithLog {
     // 重新获得 token
     const res = await getDingtalkAccessToken(this.appkey, this.appsecret);
     this.accessToken = res.accessToken;
-    this.tokenExpireAt = res.expireAt * 1000 - 60000;
+    this.tokenExpireAt = res.expireAt * 1000 - ALLOWANCE_TIME;
 
     // 写入缓存
     if (this.setToken) {
