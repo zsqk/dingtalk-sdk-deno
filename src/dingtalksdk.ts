@@ -1,3 +1,4 @@
+import { delay } from './common/delay.ts';
 import { WithLog } from './common/log.ts';
 import { getDingtalkAccessToken } from './components/accesstoken.ts';
 import {
@@ -18,6 +19,8 @@ import {
 
 /** 过期裕量, ms */
 const ALLOWANCE_TIME = 60000;
+/** 超时时间, ms */
+const TIMEOUT = 3000;
 
 export class DingtalkSDK extends WithLog {
   /** appkey, 在钉钉开发者后台获取 */
@@ -90,14 +93,28 @@ export class DingtalkSDK extends WithLog {
 
     // 从缓存中获取
     if (this.getToken) {
-      this.log('log', '准备从缓存中获取 accessToken');
-      const res = await this.getToken();
-      this.log('log', '已经从缓存中获取 accessToken', res);
-      const tokenExpireAt = res.tokenExpireAt - ALLOWANCE_TIME;
-      if (tokenExpireAt > Date.now()) {
-        this.accessToken = res.accessToken;
-        this.tokenExpireAt = tokenExpireAt;
-        return;
+      this.log('log', '准备读取 accessToken 缓存');
+      const res = await Promise.race([
+        this.getToken().catch((err) => {
+          if (err instanceof Error) {
+            return err;
+          }
+          return new Error(String(err));
+        }),
+        delay(TIMEOUT).then(() => new Error('getToken timeout')),
+      ]);
+      if (res instanceof Error) {
+        this.log('error', '读取 accessToken 缓存失败', res);
+      } else {
+        this.log('log', '已经读取 accessToken 缓存', res);
+        const tokenExpireAt = res.tokenExpireAt - ALLOWANCE_TIME;
+        if (tokenExpireAt > Date.now()) {
+          this.log('log', 'accessToken 缓存已使用');
+          this.accessToken = res.accessToken;
+          this.tokenExpireAt = tokenExpireAt;
+          return;
+        }
+        this.log('log', 'accessToken 缓存已超时');
       }
     }
 
